@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="manualTeachSlideView">
+        <!--滑动按钮的图标-->
+        <attr name="slideMenu_icon" format="reference" />
+        <!--打点文字提示-->
+        <attr name="slideMenu_assign_txt" format="string" />
+        <!--右边箭头图标-->
+        <attr name="slideMenu_right_arrow" format="reference" />
+        <!--右边确定图标-->
+        <attr name="slideMenu_right_icon" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="DividingRule">
+        <!--最大刻度-->
+        <attr name="max_scale" format="integer" />
+        <!--刻度步频-->
+        <attr name="scale_cadence" format="integer" />
+        <!--刻度线长度偏移量-->
+        <attr name="caliper_scale_length" format="integer" />
+        <!--绘制点个数-->
+        <attr name="point_count" format="integer" />
+
+    </declare-styleable>
+
+</resources>
