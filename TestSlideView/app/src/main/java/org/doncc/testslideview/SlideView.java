@@ -236,7 +236,7 @@ public class SlideView extends View implements View.OnTouchListener {
     @Override
     public boolean onTouch(View view, MotionEvent event) {
 
-        float touchX = Math.abs(event.getX());
+        float touchX = event.getX();
         float disX = 0f;
 
         switch (event.getAction()) {
