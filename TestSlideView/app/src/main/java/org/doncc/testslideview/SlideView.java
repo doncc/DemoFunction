@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -50,21 +49,21 @@ public class SlideView extends View implements View.OnTouchListener {
     //当前滑块坐标
     private float sliderPoint;
     //滑块上文字
-    private float sliderTextValue = .0f;
+    private float sliderTextValue = 1.0f;
 
     //当前视图宽度
     private int viewWidth, viewHeight;
 
     //最大刻度
     private int MAX_SCALE = 8;
-    //刻度步频
-    private int SCALE_CADENCE = 2;
     //刻度线长度偏移量
     private int CALIPER_SCALE_LENGTH = 9;
     //绘制点个数
-    private int POINT_COUNT = 5;
+    private int POINT_COUNT = 4;
 
-    private final DecimalFormat decimalFormat = new DecimalFormat("0.0");
+    private final DecimalFormat decimalFormat = new DecimalFormat("0.00");
+    private final DecimalFormat decimalFormatShowText = new DecimalFormat("0.0");
+    private final int[] pointArr = new int[POINT_COUNT];
 
     public SlideView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -82,14 +81,9 @@ public class SlideView extends View implements View.OnTouchListener {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.DividingRule);
 
         MAX_SCALE = typedArray.getInt(R.styleable.DividingRule_max_scale, MAX_SCALE);
-        SCALE_CADENCE = typedArray.getInt(R.styleable.DividingRule_scale_cadence, SCALE_CADENCE);
         CALIPER_SCALE_LENGTH = typedArray.getInt(R.styleable.DividingRule_caliper_scale_length, CALIPER_SCALE_LENGTH);
         POINT_COUNT = typedArray.getInt(R.styleable.DividingRule_point_count, POINT_COUNT);
 
-        System.out.println("max scale " + MAX_SCALE);
-        System.out.println("scale cadence " + SCALE_CADENCE);
-        System.out.println("caliper scale length " + CALIPER_SCALE_LENGTH);
-        System.out.println("point count " + POINT_COUNT);
         typedArray.recycle();
     }
 
@@ -194,7 +188,7 @@ public class SlideView extends View implements View.OnTouchListener {
         //绘制滑块，偏移6
         canvas.drawCircle(sliderPoint, viewHeight / 2, sliderRadius - 6, sliderPaint);
         //绘制滑块文字，偏移12
-        canvas.drawText(String.format("%sx", decimalFormat.format(sliderTextValue)), sliderPoint, sliderRadius + 12, sliderTextPaint);
+        canvas.drawText(String.format("%sx", decimalFormatShowText.format(sliderTextValue)), sliderPoint, sliderRadius + 12, sliderTextPaint);
     }
 
     /**
@@ -208,6 +202,7 @@ public class SlideView extends View implements View.OnTouchListener {
         //绘制卡尺
         canvas.drawLine(MIN_POINT, MIN_POINT, viewWidth - MIN_POINT, MIN_POINT, caliperPaint);
 
+        int lastI = 1;
         //绘制卡尺刻度线
         for (int i = 1; i <= POINT_COUNT; i++) {
 
@@ -220,11 +215,19 @@ public class SlideView extends View implements View.OnTouchListener {
                     MIN_POINT + CALIPER_SCALE_LENGTH,
                     caliperPaint);
 
-//            //画刻度文字
-//            canvas.drawText((i * SCALE_CADENCE - SCALE_CADENCE) + "",
-//                    CALIPER_SCALE_X,
-//                    MIN_POINT - CALIPER_SCALE_LENGTH - 12,
-//                    textPaint);
+            //画刻度文字
+            canvas.drawText(i == 1 ? i + "" : lastI + "",
+                    CALIPER_SCALE_X,
+                    MIN_POINT - CALIPER_SCALE_LENGTH - 12,
+                    textPaint);
+            if (i == 1) {
+                lastI = 1;
+            }
+            lastI *= 2;
+
+            //点加入坐标数组
+            pointArr[i - 1] = CALIPER_SCALE_X;
+
         }
         //绘制'1x'文字，偏移12
         canvas.drawText("1x", MIN_POINT / 2, MIN_POINT + 12, textPaint);
@@ -254,13 +257,27 @@ public class SlideView extends View implements View.OnTouchListener {
                 } else if (sliderPoint > MAX_POINT) {
                     sliderPoint = MAX_POINT;
                 }
-                float percentage = (sliderPoint - (float) MIN_POINT) / (float) CALIPER_DISTANCE;
-                sliderTextValue = (Float.parseFloat(decimalFormat.format(percentage))) * MAX_SCALE;
+
+                for (int i = 0; i < pointArr.length; i++) {
+                    int pl = i, pr = pl + 1;
+                    if (pl == (POINT_COUNT - 1)) {
+                        break;
+                    }
+                    int minPoint = pointArr[pl];
+                    int maxPoint = pointArr[pr];
+
+                    if (sliderPoint >= minPoint && sliderPoint <= maxPoint) {
+                        float percentage = (sliderPoint - minPoint) / (maxPoint - minPoint);
+                        //偏移步进
+                        sliderTextValue = (Float.parseFloat(decimalFormat.format(percentage))) * ((int) Math.pow(2, i)) + ((int) Math.pow(2, i));
+                    }
+                }
+
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
                 if (listener != null) {
-                    listener.valueFeedback(sliderTextValue);
+                    listener.valueFeedback(Float.parseFloat(decimalFormatShowText.format(sliderTextValue)));
                 }
                 break;
         }

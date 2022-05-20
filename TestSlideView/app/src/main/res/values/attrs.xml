@@ -14,8 +14,6 @@
     <declare-styleable name="DividingRule">
         <!--最大刻度-->
         <attr name="max_scale" format="integer" />
-        <!--刻度步频-->
-        <attr name="scale_cadence" format="integer" />
         <!--刻度线长度偏移量-->
         <attr name="caliper_scale_length" format="integer" />
         <!--绘制点个数-->

@@ -15,8 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:max_scale="8"
-        app:point_count="5"
-        app:scale_cadence="2" />
+        app:point_count="4" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

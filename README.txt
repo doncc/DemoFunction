@@ -1,1 +1,1 @@
-1.TestSlideView 自定义滑动UI，滑块卡尺
+1.TestSlideView 自定义滑动UI，变焦放大倍数滑块卡尺
