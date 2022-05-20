@@ -202,7 +202,6 @@ public class SlideView extends View implements View.OnTouchListener {
         //绘制卡尺
         canvas.drawLine(MIN_POINT, MIN_POINT, viewWidth - MIN_POINT, MIN_POINT, caliperPaint);
 
-        int lastI = 1;
         //绘制卡尺刻度线
         for (int i = 1; i <= POINT_COUNT; i++) {
 
@@ -216,14 +215,10 @@ public class SlideView extends View implements View.OnTouchListener {
                     caliperPaint);
 
             //画刻度文字
-            canvas.drawText(i == 1 ? i + "" : lastI + "",
+            canvas.drawText(((int) Math.pow(2, (i - 1))) + "",
                     CALIPER_SCALE_X,
                     MIN_POINT - CALIPER_SCALE_LENGTH - 12,
                     textPaint);
-            if (i == 1) {
-                lastI = 1;
-            }
-            lastI *= 2;
 
             //点加入坐标数组
             pointArr[i - 1] = CALIPER_SCALE_X;
