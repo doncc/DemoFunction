@@ -284,6 +284,28 @@ public class SlideView extends View implements View.OnTouchListener {
         this.listener = listener;
     }
 
+    public void setValue(float value) {
+        if (value < 1.0f || value > 8.0f) {
+            return;
+        }
+
+        sliderTextValue = value;
+
+        for (int i = 0; i < pointArr.length; i++) {
+            int pl = i, pr = pl + 1;
+            if (pl == (POINT_COUNT - 1)) {
+                break;
+            }
+
+            if (value <= ((int) Math.pow(2, i)) + ((int) Math.pow(2, i))) {
+                float percentage = (value - (float) Math.pow(2, i)) / (float) Math.pow(2, i);
+                sliderPoint = (pointArr[i + 1] - pointArr[i]) * percentage + pointArr[i];
+                invalidate();
+                break;
+            }
+        }
+    }
+
     public interface SlideViewListener {
         void valueFeedback(float value);
     }
